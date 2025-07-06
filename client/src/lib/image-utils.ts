@@ -3,12 +3,12 @@
  * Falls back to original image if WebP doesn't exist
  */
 export function getOptimizedImagePath(originalPath: string): string {
-  // Remove leading slash if present
+  // Remove leading slash if present to make paths relative
   const cleanPath = originalPath.startsWith('/') ? originalPath.slice(1) : originalPath;
   
   // Check if it's already a WebP image
   if (cleanPath.endsWith('.webp')) {
-    return `/${cleanPath}`;
+    return cleanPath;
   }
   
   // For other image formats, try to use WebP version
@@ -18,13 +18,13 @@ export function getOptimizedImagePath(originalPath: string): string {
     if (cleanPath.startsWith('images/')) {
       const fileName = cleanPath.replace('images/', '');
       const webpFileName = fileName.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-      return `/images/webp/${webpFileName}`;
+      return `images/webp/${webpFileName}`;
     }
-    return `/${webpPath}`;
+    return webpPath;
   }
   
   // Return original path if no optimization available
-  return `/${cleanPath}`;
+  return cleanPath;
 }
 
 /**
@@ -32,10 +32,10 @@ export function getOptimizedImagePath(originalPath: string): string {
  */
 export function getImageSources(originalPath: string) {
   const webpPath = getOptimizedImagePath(originalPath);
-  const originalFullPath = originalPath.startsWith('/') ? originalPath : `/${originalPath}`;
+  const originalCleanPath = originalPath.startsWith('/') ? originalPath.slice(1) : originalPath;
   
   return {
     webp: webpPath,
-    fallback: originalFullPath
+    fallback: originalCleanPath
   };
 }

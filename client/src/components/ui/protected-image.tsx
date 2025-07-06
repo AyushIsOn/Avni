@@ -21,7 +21,10 @@ export function ProtectedImage({
   watermark,
   ...props 
 }: ProtectedImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(() => {
+    // Convert initial src to relative path for proper base path handling
+    return src.startsWith('/') ? src.slice(1) : src;
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -33,8 +36,10 @@ export function ProtectedImage({
     }
     
     // Convert /images/filename.ext to /webp-images/filename.webp
-    const webpSrc = originalSrc
-      .replace('/images/', '/webp-images/')
+    // Remove leading slash to make it relative to base path
+    const cleanSrc = originalSrc.startsWith('/') ? originalSrc.slice(1) : originalSrc;
+    const webpSrc = cleanSrc
+      .replace('images/', 'webp-images/')
       .replace(/\.(jpg|jpeg|png)$/i, '.webp');
     
     return webpSrc;
@@ -50,9 +55,9 @@ export function ProtectedImage({
     setHasError(true);
     
     // Try fallback to original format if WebP fails
-    if (imgSrc.includes('/webp-images/')) {
+    if (imgSrc.includes('webp-images/')) {
       const originalSrc = imgSrc
-        .replace('/webp-images/', '/images/')
+        .replace('webp-images/', 'images/')
         .replace('.webp', '.jpg');
       setImgSrc(fallbackSrc || originalSrc);
     }

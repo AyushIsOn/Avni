@@ -34,10 +34,12 @@ jobs:
       
     - name: Fix GitHub Pages paths
       run: |
-        # Update HTML base path and asset paths for GitHub Pages
-        sed -i 's|<base href="/">|<base href="/Avni/">|g' dist/index.html
-        sed -i 's|href="/assets/|href="/Avni/assets/|g' dist/index.html
-        sed -i 's|src="/assets/|src="/Avni/assets/|g' dist/index.html
+        # Update HTML paths for GitHub Pages (Vite already handles base path)
+        # Fix any remaining absolute paths that might not be handled by Vite
+        find dist -name "*.html" -exec sed -i 's|href="/images/|href="/Avni/images/|g' {} \;
+        find dist -name "*.html" -exec sed -i 's|src="/images/|src="/Avni/images/|g' {} \;
+        find dist -name "*.html" -exec sed -i 's|href="/webp-images/|href="/Avni/webp-images/|g' {} \;
+        find dist -name "*.html" -exec sed -i 's|src="/webp-images/|src="/Avni/webp-images/|g' {} \;
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
